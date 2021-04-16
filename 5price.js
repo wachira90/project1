@@ -1,69 +1,53 @@
 #!node
-const { Sequelize, DataTypes } = require('sequelize');
+const { Sequelize, Model, DataTypes, Deferrable } = require("sequelize");
 
-// Option 1: Passing a connection URI
-// const sequelize = new Sequelize('sqlite::memory:') // Example for sqlite
-const sequelize = new Sequelize('postgres://postgres:zxczxc@192.168.4.42:5432/weightdb') // Example for postgres
+// const sequelize = new Sequelize('postgres://postgres:zxczxc@192.168.6.150:5432/weightdb');
 
-// Option 2: Passing parameters separately (sqlite)
-// const sequelize = new Sequelize({
-//   dialect: 'sqlite',
-//   storage: 'path/to/database.sqlite'
-// });
-
-// Option 2: Passing parameters separately (other dialects)
-// const sequelize = new Sequelize('database', 'username', 'password', {
-//   host: 'localhost',
-//   dialect: /* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */
-// });
-
-// try {
-//   await sequelize.authenticate();
-//   console.log('Connection has been established successfully.');
-// } catch (error) {
-//   console.error('Unable to connect to the database:', error);
-// }
-
-const User = sequelize.define('euser', {
-    // Model attributes are defined here
-    firstName: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    lastName: {
-        type: DataTypes.STRING,
-        allowNull: false
-        // allowNull defaults to true
-    },
-    uid: {
-        type: DataTypes.UUID,
-        allowNull: true
-    },
-    bdate: {
-        type: DataTypes.DATE,
-        allowNull: false
-    }
-}, {
-    sequelize,
-    // Other model options go here
-    timestamps: true,
-
-    createdAt: true,
-
-    // I want updatedAt to actually be called updateTimestamp
-    // updatedAt: 'updateTimestamp'
-    updatedAt: 'updatedAt'
+const sequelize = new Sequelize("weightdb", "postgres", "zxczxc", {
+    host: "192.168.6.150",
+    port: 5432,
+    dialect: "postgres",
 });
 
-// `sequelize.define` also returns the model
-console.log(User === sequelize.models.User); // true
+// const sequelize =  require('./connect-db');
 
-async function user_make() {
-    await User.sync({ force: true });
-    console.log("####The table for the User model was just (re)created!####");
-    await console.log('====>CREATE SUCCESSFULLY....!<====');
+const Last_price = sequelize.define(
+    "last_price",
+    {
+        product_id: {
+            type: DataTypes.STRING(50),
+            allowNull: false,
+            comment: "product id"
+        },
+        product_name: {
+            type: DataTypes.STRING(50),
+            allowNull: false,
+            comment: "product name"
+        },
+        price: {
+            type: DataTypes.DECIMAL(10, 2),
+            defaultValue: 0.0,
+            allowNull: false,
+            comment: "product price"
+        },
+    },
+    {
+        sequelize,
+        freezeTableName: true,
+        timestamps: true,
+        createdAt: true,
+        updatedAt: "updatedAt",
+        comment: "last price table",
+    }
+);
+
+console.log(Last_price === sequelize.models.Last_price);
+
+async function Last_price_make() {
+    await Last_price.sync({ force: true });
+    console.log("####The table for the Last_price model was just (re)created!####");
+    await console.log("====>CREATE SUCCESSFULLY....!<====");
+    sequelize.close();
 }
 
-user_make()
-
-//======================
+Last_price_make();
