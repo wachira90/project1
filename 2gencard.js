@@ -17,8 +17,9 @@ const Card = sequelize.define('card', {
         comment: 'admin id'
     },
     card_id: {
-        type: DataTypes.UUID,
-        allowNull: true,
+//         type: DataTypes.UUID,
+        type: DataTypes.STRING(50),
+        allowNull: false,
         comment: 'card id'
     }
 }, {
