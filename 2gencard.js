@@ -1,11 +1,29 @@
 #!node
 const { Sequelize, Model, DataTypes, Deferrable  } = require('sequelize');
 
-const sequelize = new Sequelize('postgres://postgres:zxczxc@192.168.4.42:5432/weightdb');
+const config = require('config');
+let _HOST = config.get('_HOST');
+let _USER = config.get('_USER');
+let _DB = config.get('_DB');
+let _DBTYPE = config.get('_DBTYPE');
+let _PASS = config.get('_PASS');
+let _PORT = config.get('_PORT');
+
+const sequelize = new Sequelize(_DB, _USER, _PASS, {
+    host: _HOST,
+    port: _PORT,
+    dialect: _DBTYPE
+});
 
 
 const Card = sequelize.define('card', {
-    // idm: { type: DataTypes.STRING, primaryKey: true },
+    id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        unique : true,
+        primaryKey: true,
+        comment: 'auto id'
+    },
     customer_id: {
         type: DataTypes.STRING(50),
         allowNull: false,
@@ -14,12 +32,12 @@ const Card = sequelize.define('card', {
     useradmin_id: {
         type: DataTypes.STRING(50),
         allowNull: false,
-        comment: 'admin id'
+        comment: 'useradmin id'
     },
     card_id: {
-//         type: DataTypes.UUID,
         type: DataTypes.STRING(50),
         allowNull: false,
+        unique: true,
         comment: 'card id'
     }
 }, {
@@ -37,6 +55,16 @@ async function Card_make() {
     await Card.sync({ force: true });
     console.log("####The table for the Card model was just (re)created!####");
     await console.log('====>CREATE SUCCESSFULLY....!<====');
+    await Card.create({ customer_id: 1, useradmin_id: 2, card_id: "XXAADDSE" });
+    await Card.create({ customer_id: 3, useradmin_id: 3, card_id: "ERVB3454" });
+    await Card.create({ customer_id: 2, useradmin_id: 1, card_id: "TYNBY678" });
+    await Card.create({ customer_id: 2, useradmin_id: 3, card_id: "TYNBY478" });
+    await Card.create({ customer_id: 3, useradmin_id: 1, card_id: "TYNBY578" });
+    await Card.create({ customer_id: 2, useradmin_id: 2, card_id: "TYNKY678" });
+    await Card.create({ customer_id: 3, useradmin_id: 1, card_id: "TYNBY778" });
+    await Card.create({ customer_id: 2, useradmin_id: 2, card_id: "TYNBY878" });
+    await Card.create({ customer_id: 2, useradmin_id: 1, card_id: "TYNBY978" });
+    sequelize.close();
 }
 
-Card_make()
+Card_make();
